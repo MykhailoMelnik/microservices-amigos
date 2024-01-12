@@ -1,0 +1,27 @@
+# Конфігурація Spring Boot додатку
+server:
+  port: 8081  # Порт, на якому запускається сервер Spring Boot
+
+spring:
+  application:
+    name: customer  # Назва Spring Boot додатку
+  datasource:
+    username: 'amigoscode'  # Ім'я користувача для підключення до бази даних PostgreSQL
+    url: jdbc:postgresql://localhost:5432/customer  # URL для підключення до PostgreSQL
+    password: 'password'  # Пароль для підключення до бази даних PostgreSQL
+  jpa:
+      properties:
+        hibernate:
+          dialect: org.hibernate.dialect.PostgreSQLDialect  # Діалект Hibernate для PostgreSQL
+          format_sql: 'true'  # Форматування SQL-запитів для зручності читання
+      hibernate:
+        ddl-auto: update  # Рівень автоматичного виконання SQL-запитів для створення/оновлення моделі бази даних
+      show-sql: 'true'  # Показувати SQL-запити в консолі
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka
+    fetch-registry: true
+    register-with-eureka: true
+    enabled: true

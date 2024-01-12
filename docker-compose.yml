@@ -1,0 +1,143 @@
+# Конфігурація сервісів
+services:
+  # Сервіс PostgreSQL
+  postgres:
+    # Назва контейнера PostgreSQL
+    container_name: postgres
+    # Використовуваний образ Docker для PostgreSQL
+    image: postgres
+    # Налаштування середовища PostgreSQL (користувач, пароль, шлях до даних)
+    environment:
+      POSTGRES_USER: amigoscode
+      POSTGRES_PASSWORD: password
+      PGDATA: /data/postgres
+    # Підключені томи для збереження даних PostgreSQL
+    volumes:
+      - postgres:/data/postgres
+    # Мапування портів для доступу до бази даних за допомогою порту 5432
+    ports:
+      - "5432:5432"
+    # Підключення до мережі "postgres"
+    networks:
+      - postgres
+    # Поведінка перезапуску, якщо не зупинено
+    restart: unless-stopped
+  
+  # Сервіс pgAdmin
+  pgadmin:
+    # Назва контейнера pgAdmin
+    container_name: pgadmin
+    # Використовуваний образ Docker для pgAdmin
+    image: dpage/pgadmin4
+    # Налаштування середовища pgAdmin (електронна пошта, пароль)
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-pgadmin4@pgadmin.org}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-admin}
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+    # Підключені томи для збереження даних pgAdmin
+    volumes:
+      - pgadmin:/var/lib/pgadmin
+    # Мапування портів для зовнішнього доступу до інтерфейсу pgAdmin
+    ports:
+      - "5050:80"
+    # Підключення до мережі "postgres"
+    networks:
+      - postgres
+    # Поведінка перезапуску, якщо не зупинено
+    restart: unless-stopped
+
+# Закоментовані сервіси, які наразі не використовуються
+#  zipkin:
+#    image: openzipkin/zipkin
+#    container_name: zipkin
+#    ports:
+#      - "9411:9411"
+#    networks:
+#      - spring
+#  rabbitmq:
+#    image: rabbitmq:3.9.11-management-alpine
+#    container_name: rabbitmq
+#    ports:
+#      - "5672:5672"
+#      - "15672:15672"
+#    networks:
+#      - spring
+#  eureka-server:
+#    image: amigoscode/eureka-server:latest
+#    container_name: eureka-server
+#    ports:
+#      - "8761:8761"
+#    environment:
+#      - SPRING_PROFILES_ACTIVE=docker
+#    networks:
+#      - spring
+#    depends_on:
+#      - zipkin
+#  apigw:
+#    image: amigoscode/apigw:latest
+#    container_name: apigw
+#    ports:
+#      - "8083:8083"
+#    environment:
+#      - SPRING_PROFILES_ACTIVE=docker
+#    networks:
+#      - spring
+#    depends_on:
+#      - zipkin
+#      - eureka-server
+#  customer:
+#    image: amigoscode/customer:latest
+#    container_name: customer
+#    ports:
+#      - "8080:8080"
+#    environment:
+#      - SPRING_PROFILES_ACTIVE=docker
+#    networks:
+#      - spring
+#      - postgres
+#    depends_on:
+#      - zipkin
+#      - postgres
+#      - rabbitmq
+#  fraud:
+#    image: amigoscode/fraud:latest
+#    container_name: fraud
+#    ports:
+#      - "8081:8081"
+#    environment:
+#      - SPRING_PROFILES_ACTIVE=docker
+#    networks:
+#      - spring
+#      - postgres
+#    depends_on:
+#      - zipkin
+#      - postgres
+#      - rabbitmq
+#  notification:
+#    image: amigoscode/notification:latest
+#    container_name: notification
+#    ports:
+#      - "8082:8082"
+#    environment:
+#      - SPRING_PROFILES_ACTIVE=docker
+#    networks:
+#      - spring
+#      - postgres
+#    depends_on:
+#      - zipkin
+
+# Визначення мереж
+networks:
+  # Мережа для PostgreSQL
+  postgres:
+    driver: bridge
+  # Ще одна мережа, але не використовується в цьому коді
+  spring:
+    driver: bridge
+
+# Визначення томів
+volumes:
+  # Том для збереження даних PostgreSQL
+  postgres:
+  # Том для збереження даних pgAdmin
+  pgadmin:
